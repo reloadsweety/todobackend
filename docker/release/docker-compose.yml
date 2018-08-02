@@ -1,0 +1,70 @@
+version: '2'
+
+volumes:
+  webroot:
+    driver: local
+  cache:
+    external: true
+
+services:
+  app:
+    build: 
+      context: ../../
+      dockerfile: docker/release/Dockerfile
+    links:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: todobackend.settings.release
+    volumes:
+      - webroot:/var/www/todobackend
+    command:
+      - uwsgi
+      - "--socket /var/www/todobackend/todobackend.sock"
+      - "--chmod-socket=666"
+      - "--module todobackend.wsgi"
+      - "--master"
+      - "--die-on-term"
+
+  # test:
+  #   image: jmenga/todobackend-specs
+  #   links:
+  #     - nginx
+  #   environment:
+  #     URL: http://nginx:8000/todos
+  #     JUNIT_REPORT_PATH: /reports/acceptance.xml
+  #     JUNIT_REPORT_STACK: 1
+  #   command: --reporter mocha-jenkins-reporter
+
+  test:
+    build: 
+      context: ../../
+      dockerfile: docker/dev/Dockerfile  
+    volumes:
+      - cache:/cache
+    links:
+      - db
+
+  nginx:
+    build: 
+      context: .
+      dockerfile: Dockerfile.nginx
+    links:
+      - app
+    ports:
+      - "8000:8000"
+    volumes:
+      - webroot:/var/www/todobackend
+
+  db:
+    image: postgres
+    expose:
+      - "5432"
+
+  agent:
+    image: game/ansible
+    links:
+      - db
+    environment:
+      PROBE_HOST: "db"
+      PROBE_PORT: "5432"
+    command: ["probe.yml"]

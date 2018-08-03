@@ -23,7 +23,7 @@ services:
     image: postgres
 
   agent:
-    image: game/ansible
+    image: johnhamer1/ansible
     links:
       - db
     environment:

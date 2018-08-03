@@ -1,4 +1,4 @@
-FROM game/todobackend-base:latest
+FROM johnhamer1/todobackend-base:latest
 MAINTAINER GAME
 
 # Install dev/build dependencies

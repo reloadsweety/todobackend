@@ -43,6 +43,8 @@ services:
       - cache:/cache
     links:
       - db
+      - app
+      - nginx
 
   nginx:
     build: 
@@ -61,7 +63,7 @@ services:
       - "5432"
 
   agent:
-    image: game/ansible
+    image: johnhamer1/ansible
     links:
       - db
     environment:

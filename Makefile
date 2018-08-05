@@ -1,4 +1,4 @@
-# Project variables
+# Project variables..
 PROJECT_NAME ?= todobackend
 ORG_NAME ?= johnhamer1
 REPO_NAME ?= todobackend
